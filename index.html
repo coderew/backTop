@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>回到顶部</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        ul li {
+            list-style: none;
+        }
+
+        .home {
+            width: 100%;
+            height: 1000px;
+            background: skyblue;
+            text-align: center;
+            font-size: 100px;
+        }
+
+        .floor {
+            width: 100%;
+            height: 600px;
+            background: skyblue;
+            text-align: center;
+            /* border-top: 1px solid #000; */
+            font-size: 100px;
+        }
+
+        .top {
+            display: none;
+            background: #000;
+            color: #fff;
+            position: fixed;
+            left: 10px;
+            top: 60%;
+        }
+
+        .top:hover {
+            background: red;
+        }
+
+        .address {
+            display: none;
+            position: fixed;
+            top: 100px;
+            left: 10px;
+        }
+
+        .address li {
+            margin-top: 10px;
+        }
+
+        .address a {
+            margin-top: 10px;
+            background: #000;
+            color: #fff;
+        }
+
+        #bg {
+            background: blue;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="home" id="home">首页</div>
+    <ul id="content">
+        <li class="floor">楼层一</li>
+        <li class="floor">楼层二</li>
+        <li class="floor">楼层三</li>
+        <li class="floor">楼层四</li>
+        <li class="floor">楼层五</li>
+        <li class="floor">楼层六</li>
+        <li class="floor">楼层七</li>
+        <li class="floor">楼层八</li>
+    </ul>
+    <a class="top" id="top" href="javascript:;">回顶部</a>
+    <ul class="address" id="address">
+        <li>
+            <a href="javascript:;">楼层一</a>
+        </li>
+        <li>
+            <a href="javascript:;">楼层二</a>
+        </li>
+        <li>
+            <a href="javascript:;">楼层三</a>
+        </li>
+        <li>
+            <a href="javascript:;">楼层四</a>
+        </li>
+        <li>
+            <a href="javascript:;">楼层五</a>
+        </li>
+        <li>
+            <a href="javascript:;">楼层六</a>
+        </li>
+        <li>
+            <a href="javascript:;">楼层七</a>
+        </li>
+        <li>
+            <a href="javascript:;">楼层八</a>
+        </li>
+    </ul>
+</body>
+<script>
+    var backTop = document.getElementById('top');
+    var address = document.getElementById('address');
+    var floorList = address.getElementsByTagName('a');
+    var content = document.getElementById('content');
+    var contentList = content.getElementsByTagName('li');
+    var home = document.getElementById('home');
+
+    function calculateHeight() {
+        var ary = [];
+        var height = home.clientHeight;
+        ary.push(height);
+        for (var i = 0; i < contentList.length; i++) {
+            var element = contentList[i];
+            height += element.clientHeight;
+            ary.push(height);
+        }
+        return ary;
+    }
+    // 计算每个楼层的高度
+    var ary = calculateHeight();
+    window.onscroll = fn;
+    // 滚动事件
+    function fn() {
+        var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        var currentHeight = document.documentElement.scrollTop || document.body.scrollTop;
+        backTop.style.display = currentHeight > windowHeight ? 'block' : 'none'
+        address.style.display = currentHeight > windowHeight ? 'block' : 'none'
+        var targetHeight = currentHeight + windowHeight - (windowHeight / 3);
+
+        for (var i = 0; i < ary.length - 1; i++) {
+            var pre = ary[i];
+            var nex = ary[i + 1]
+            if (targetHeight > pre && targetHeight < nex) {
+                floorList[i].id = 'bg';
+            } else {
+                floorList[i].id = '';
+            }
+        }
+    }
+    // 回到顶部点击事件
+    backTop.onclick = function () {
+        window.onscroll = null;
+        var duration = 300;
+        var interval = 10;
+        var distance = document.documentElement.scrollTop || document.body.scrollTop;
+        var step = (distance / duration) * interval;
+        var timer = window.setInterval(function () {
+            var curTop = document.documentElement.scrollTop || document.body.scrollTop;
+            if (curTop === 0) {
+                window.clearInterval(timer);
+                backTop.style.display = 'none';
+                address.style.display = 'none';
+                window.onscroll = fn;
+                return;
+            }
+            curTop -= step;
+            document.documentElement.scrollTop = curTop;
+            document.body.scrollTop = curTop;
+        }, interval)
+    }
+    // 楼层导航点击事件
+    for (var i = 0; i < floorList.length; i++) {
+        (function (i) {
+            floorList[i].onclick = function () {
+                document.documentElement.scrollTop = ary[i];
+                document.body.scrollTop = ary[i];
+            }
+        })(i)
+    }
+</script>
+
+</html>
